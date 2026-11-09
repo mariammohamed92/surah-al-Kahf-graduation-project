@@ -15,7 +15,10 @@ export const RECITERS = [
   { id: 'alafasy', name: 'مشاري راشد العفاسي', folder: 'Alafasy_128kbps' },
   { id: 'husary', name: 'محمود خليل الحصري', folder: 'Husary_128kbps' },
   { id: 'minshawy', name: 'محمد صديق المنشاوي', folder: 'Minshawy_Murattal_128kbps' },
-  { id: 'abdulbasit', name: 'عبد الباسط عبد الصمد', folder: 'Abdul_Basit_Murattal_192kbps' }
+  { id: 'abdulbasit', name: 'عبد الباسط عبد الصمد', folder: 'Abdul_Basit_Murattal_192kbps' },
+  { id: 'faris', name: 'فارس عباد', folder: 'Fares_Abbad_64kbps' },
+  { id: 'yasser', name: 'ياسر الدوسري', folder: 'Yasser_Ad-Dussary_128kbps' },
+  { id: 'maher', name: 'ماهر المعقيلي', folder: 'MaherAlMuaiqly128kbps' }
 ];
 
 export default function AudioPlayer() {
@@ -28,11 +31,21 @@ export default function AudioPlayer() {
   const [isReciterMenuOpen, setIsReciterMenuOpen] = useState(false);
 
   const audioRef = useRef(null);
+  const nextAudioRef = useRef(null);
 
-  // رابط الآية من موقع EveryAyah
+  // رابط الآية بدقة آية بآية من موقع EveryAyah (من 83 إلى 110)
   const getAyahUrl = (ayahNum, reciter) => {
     const pad = ayahNum.toString().padStart(3, '0');
     return `https://everyayah.com/data/${reciter.folder}/018${pad}.mp3`;
+  };
+
+  // التحميل المسبق للآية التالية في الخلفية لضمان الانتقال الفوري بدون أي وقف
+  const preloadNextAyah = (nextAyahNum, reciter) => {
+    if (nextAyahNum > 110) return;
+    if (nextAudioRef.current) {
+      nextAudioRef.current.src = getAyahUrl(nextAyahNum, reciter);
+      nextAudioRef.current.load();
+    }
   };
 
   // تشغيل آية معينة
@@ -51,6 +64,8 @@ export default function AudioPlayer() {
       audioRef.current.muted = isMuted;
       audioRef.current.play().then(() => {
         setIsPlayingAudio(true);
+        // التحميل المسبق للآية التالية أثناء تشغيل الآية الحالية لضمان عدم وجود أي فاصل
+        preloadNextAyah(ayahNum + 1, reciter);
       }).catch((err) => {
         console.warn('Audio playback error:', err);
         setIsPlayingAudio(false);
@@ -58,7 +73,7 @@ export default function AudioPlayer() {
     }
   };
 
-  // عند انتهاء الآية الحالية، الانتقال التلقائي للآية التالية حتى النهاية (110)
+  // عند انتهاء الآية الحالية، الانتقال الفوري للآية التالية بدون أي وقت استجابة أو وقف
   const handleEnded = () => {
     if (isLoopAyah) {
       if (audioRef.current) {
@@ -70,7 +85,21 @@ export default function AudioPlayer() {
 
     if (currentAyah < 110) {
       const nextAyah = currentAyah + 1;
-      playAyah(nextAyah, selectedReciter);
+      // إذا كانت الآية التالية جاهزة ومحملة في الخلفية، يتم التبديل فوراً وبدون أي وقت توقف
+      if (nextAudioRef.current && nextAudioRef.current.src && nextAudioRef.current.readyState >= 2) {
+        setCurrentAyah(nextAyah);
+        audioRef.current.src = nextAudioRef.current.src;
+        audioRef.current.volume = volume;
+        audioRef.current.muted = isMuted;
+        audioRef.current.play().then(() => {
+          setIsPlayingAudio(true);
+          preloadNextAyah(nextAyah + 1, selectedReciter);
+        }).catch(() => {
+          playAyah(nextAyah, selectedReciter);
+        });
+      } else {
+        playAyah(nextAyah, selectedReciter);
+      }
     } else {
       setIsPlayingAudio(false);
       setCurrentAyah(83);
@@ -95,6 +124,11 @@ export default function AudioPlayer() {
         ref={audioRef}
         preload="auto"
         onEnded={handleEnded}
+      />
+      {/* مشغل خفي لتخزين وتحميل الآية القادمة مسبقاً لمنع أي وقف بين الآيات */}
+      <audio
+        ref={nextAudioRef}
+        preload="auto"
       />
 
       {/* زر التشغيل والإيقاف */}
@@ -126,7 +160,7 @@ export default function AudioPlayer() {
         {isPlayingAudio ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current translate-x-[-1px]" />}
       </button>
 
-      {/* السابق والتالي */}
+      {/* زر الانتقال للآية السابقة */}
       <button
         onClick={() => currentAyah > 83 && playAyah(currentAyah - 1)}
         disabled={currentAyah <= 83}
@@ -136,6 +170,7 @@ export default function AudioPlayer() {
         <SkipForward className="w-3.5 h-3.5" />
       </button>
 
+      {/* زر الانتقال للآية التالية */}
       <button
         onClick={() => currentAyah < 110 && playAyah(currentAyah + 1)}
         disabled={currentAyah >= 110}
@@ -199,7 +234,7 @@ export default function AudioPlayer() {
                   if (isPlayingAudio) playAyah(currentAyah, r);
                 }}
                 className={`text-[10px] sm:text-[11px] p-1.5 rounded-lg text-right truncate ${
-                  selectedReciter.id === r.id ? 'bg-pink-600 text-white font-bold' : 'bg-purple-950/60 text-purple-200'
+                  selectedReciter.id === r.id ? 'bg-pink-600/90 text-white font-bold' : 'bg-purple-950/60 text-purple-200 hover:bg-purple-900/60'
                 }`}
               >
                 {r.name}
