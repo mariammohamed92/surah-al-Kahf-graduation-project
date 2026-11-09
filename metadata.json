@@ -1,0 +1,6 @@
+{
+  "name": "سورة الكهف وقصة ذي القرنين | العرض التقديمي التفاعلي",
+  "description": "عرض تقديمي تفاعلي متكامل لمقدمة سورة الكهف ومحاورها وقصة ذي القرنين بألوان البينك والموف والأنيميشن الاحترافي.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
