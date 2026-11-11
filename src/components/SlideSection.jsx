@@ -268,7 +268,7 @@ export default function SlideSection({ slide, isActive }) {
 
         <div className="max-h-[380px] overflow-y-auto pr-2 pb-8 scrollbar-thin scrollbar-thumb-pink-500/40 scrollbar-track-purple-950/40 space-y-3">
           {slide.members.map((member, idx) => {
-            const isFirstSix = idx < 6;
+    
             return (
               <div
                 key={idx}
@@ -279,7 +279,7 @@ export default function SlideSection({ slide, isActive }) {
                 </span>
                 <span className="text-base sm:text-lg font-bold text-gray-100 flex items-center gap-2 flex-wrap">
                   {member}
-                  {isFirstSix && <span className="text-pink-400">🌸</span>}
+                
                 </span>
               </div>
             );
