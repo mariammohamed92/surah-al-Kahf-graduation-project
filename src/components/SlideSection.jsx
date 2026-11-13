@@ -214,13 +214,24 @@ export default function SlideSection({ slide, isActive }) {
               <span className="text-gray-100 font-bold text-base sm:text-lg">{attendance}</span>
             </div>
           </div>
+        
+<div className="flex items-center gap-4 py-3 border-b border-pink-500/15">
+            <span className="text-pink-300 font-bold text-base sm:text-lg">اسم الفِرق القرآني:</span>
+            <span className="text-white font-bold text-base sm:text-lg">{workshopDetails.quranGroup}</span>
+          </div>
 
           <div className="flex items-center gap-4 py-3">
-            <span className="text-pink-300 font-bold text-base sm:text-lg">اسم الفِرق القرآني:</span>
-            <span className="text-white font-bold text-base sm:text-lg">{quranGroup}</span>
+            <span className="text-pink-300 font-bold text-base sm:text-lg">مشروع التخرج PDF:</span>
+            <a
+              href="https://drive.google.com/drive/folders/1cDji70KqdLrK7isbNUIrBA-XoxRk3hvs"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white text-sm sm:text-base font-bold shadow-[0_0_15px_rgba(236,72,153,0.4)] border border-pink-400/40 transition transform hover:scale-105 cursor-pointer"
+            >
+              اضغط هنا
+            </a>
           </div>
-        </div>
-
+        
         {/* نطاق الفِرق القرآني */}
         {slide.quranScopeTitle && (
           <div className="bg-[#12051d]/90 border border-pink-500/30 rounded-2xl p-6 sm:p-8 shadow-inner space-y-4">
