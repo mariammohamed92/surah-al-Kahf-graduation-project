@@ -1,12 +1,16 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Check, BookOpen, Users, ListTree } from 'lucide-react';
-import MindMapSlide from './MindMapSlide';
-import AppendixTablesSlide from './AppendixTablesSlide';
-import TributeSlide from './TributeSlide';
-import { KahfSlide } from '../data/kahfData';
+import MindMapSlide from './MindMapSlide.jsx';
+import AppendixTablesSlide from './AppendixTablesSlide.jsx';
+import TributeSlide from './TributeSlide.jsx';
 
-export function formatIslamicText(text: string): any {
+export function formatIslamicText(text) {
   if (!text || typeof text !== 'string') return text;
 
   const qSegments = text.split(/(?<=[؟])/);
@@ -129,15 +133,10 @@ export function formatIslamicText(text: string): any {
   });
 }
 
-interface SlideSectionProps {
-  slide: KahfSlide;
-  isActive: boolean;
-}
-
-export default function SlideSection({ slide, isActive }: SlideSectionProps) {
-  const [activeTabIdx, setActiveTabIdx] = useState<number>(0);
-  const [activeStationIdx, setActiveStationIdx] = useState<number>(0);
-  const [activeSubStationIdx, setActiveSubStationIdx] = useState<number>(0);
+export default function SlideSection({ slide, isActive }) {
+  const [activeTabIdx, setActiveTabIdx] = useState(0);
+  const [activeStationIdx, setActiveStationIdx] = useState(0);
+  const [activeSubStationIdx, setActiveSubStationIdx] = useState(0);
 
   if (slide.type === 'cover') {
     return (
@@ -161,7 +160,7 @@ export default function SlideSection({ slide, isActive }: SlideSectionProps) {
   }
 
   if (slide.type === 'workshop-info') {
-    const { workshopName, workshopNumber, attendance, quranGroup } = slide.workshopDetails!;
+    const { workshopName, workshopNumber, attendance, quranGroup } = slide.workshopDetails;
     return (
       <motion.section
         id={`slide-${slide.slideNumber}`}
