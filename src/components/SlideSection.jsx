@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Check, BookOpen, Users, ListTree, ZoomIn, X } from 'lucide-react';
-import MindMapSlide from './MindMapSlide.jsx';
-import AppendixTablesSlide from './AppendixTablesSlide.jsx';
-import TributeSlide from './TributeSlide.jsx';
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
-export function formatIslamicText(text) {
+import React, { useState } from 'react';
+import { motion } from 'motion/react';
+import { Check, BookOpen, Users, ListTree } from 'lucide-react';
+import MindMapSlide from './MindMapSlide';
+import AppendixTablesSlide from './AppendixTablesSlide';
+import TributeSlide from './TributeSlide';
+import { KahfSlide } from '../data/kahfData';
+
+export function formatIslamicText(text: string): any {
   if (!text || typeof text !== 'string') return text;
 
   const qSegments = text.split(/(?<=[؟])/);
@@ -49,7 +55,6 @@ export function formatIslamicText(text) {
 
     const cleanPart = part.replace(/^[-–\s❖]+/, '').replace(/[:]/g, '').trim();
 
-    // قوانين الحياة وروشتات الحياة - البينك الخفيف بدون بوردر ولا بلوك
     const isLawItem = [
       'القانون الأول', 'القانون الثاني', 'القانون الثالث', 'القانون الرابع', 'القانون الخامس',
       'قانون التصديق', 'قانون الفعل', 'قانون العطاء', 'قانون التحرر', 'قانون الاستطاعة',
@@ -129,13 +134,16 @@ export function formatIslamicText(text) {
   });
 }
 
-export default function SlideSection({ slide, isActive }) {
-  const [activeTabIdx, setActiveTabIdx] = useState(0);
-  const [activeStationIdx, setActiveStationIdx] = useState(0);
-  const [activeSubStationIdx, setActiveSubStationIdx] = useState(0);
-  const [isZoomed, setIsZoomed] = useState(false);
+interface SlideSectionProps {
+  slide: KahfSlide;
+  isActive: boolean;
+}
 
-  // 1. شريحة الغلاف (Cover)
+export default function SlideSection({ slide, isActive }: SlideSectionProps) {
+  const [activeTabIdx, setActiveTabIdx] = useState<number>(0);
+  const [activeStationIdx, setActiveStationIdx] = useState<number>(0);
+  const [activeSubStationIdx, setActiveSubStationIdx] = useState<number>(0);
+
   if (slide.type === 'cover') {
     return (
       <motion.section
@@ -157,9 +165,8 @@ export default function SlideSection({ slide, isActive }) {
     );
   }
 
-  // 2. الصفحة الثانية: بيانات الورشة ونطاق الفِرق القرآني
   if (slide.type === 'workshop-info') {
-    const { workshopName, workshopNumber, attendance, quranGroup } = slide.workshopDetails;
+    const { workshopName, workshopNumber, attendance, quranGroup } = slide.workshopDetails!;
     return (
       <motion.section
         id={`slide-${slide.slideNumber}`}
@@ -193,7 +200,6 @@ export default function SlideSection({ slide, isActive }) {
           </h3>
         </div>
 
-        {/* تفاصيل الورشة */}
         <div className="bg-[#240c35]/90 border border-pink-500/30 rounded-2xl p-6 sm:p-8 shadow-sm space-y-5 leading-loose">
           <div className="flex items-center gap-4 py-3 border-b border-pink-500/15">
             <span className="text-pink-300 font-bold text-base sm:text-lg">اسم الورشة:</span>
@@ -214,10 +220,10 @@ export default function SlideSection({ slide, isActive }) {
               <span className="text-gray-100 font-bold text-base sm:text-lg">{attendance}</span>
             </div>
           </div>
-        
-<div className="flex items-center gap-4 py-3 border-b border-pink-500/15">
+
+          <div className="flex items-center gap-4 py-3 border-b border-pink-500/15">
             <span className="text-pink-300 font-bold text-base sm:text-lg">اسم الفِرق القرآني:</span>
-            <span className="text-white font-bold text-base sm:text-lg">{workshopDetails.quranGroup}</span>
+            <span className="text-white font-bold text-base sm:text-lg">{quranGroup}</span>
           </div>
 
           <div className="flex items-center gap-4 py-3">
@@ -231,8 +237,8 @@ export default function SlideSection({ slide, isActive }) {
               اضغط هنا
             </a>
           </div>
-        
-        {/* نطاق الفِرق القرآني */}
+        </div>
+
         {slide.quranScopeTitle && (
           <div className="bg-[#12051d]/90 border border-pink-500/30 rounded-2xl p-6 sm:p-8 shadow-inner space-y-4">
             <h4 className="text-lg sm:text-2xl font-bold text-white">
@@ -248,7 +254,6 @@ export default function SlideSection({ slide, isActive }) {
     );
   }
 
-  // 3. شريحة فريق العمل (Team)
   if (slide.type === 'team') {
     return (
       <motion.section
@@ -278,29 +283,24 @@ export default function SlideSection({ slide, isActive }) {
         </div>
 
         <div className="max-h-[380px] overflow-y-auto pr-2 pb-8 scrollbar-thin scrollbar-thumb-pink-500/40 scrollbar-track-purple-950/40 space-y-3">
-          {slide.members.map((member, idx) => {
-    
-            return (
-              <div
-                key={idx}
-                className="flex items-center gap-3.5 bg-[#240c35]/90 border border-pink-500/25 rounded-2xl p-4 shadow-sm hover:border-pink-500/50 hover:bg-[#2b0e3f] transition-all"
-              >
-                <span className="w-8 h-8 rounded-xl bg-gradient-to-tr from-pink-500 to-purple-600 text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-md">
-                  {idx + 1}
-                </span>
-                <span className="text-base sm:text-lg font-bold text-gray-100 flex items-center gap-2 flex-wrap">
-                  {member}
-                
-                </span>
-              </div>
-            );
-          })}
+          {(slide.members || []).map((member, idx) => (
+            <div
+              key={idx}
+              className="flex items-center gap-3.5 bg-[#240c35]/90 border border-pink-500/25 rounded-2xl p-4 shadow-sm hover:border-pink-500/50 hover:bg-[#2b0e3f] transition-all"
+            >
+              <span className="w-8 h-8 rounded-xl bg-gradient-to-tr from-pink-500 to-purple-600 text-white font-bold text-sm flex items-center justify-center shrink-0 shadow-md">
+                {idx + 1}
+              </span>
+              <span className="text-base sm:text-lg font-bold text-gray-100 flex items-center gap-2 flex-wrap">
+                {member}
+              </span>
+            </div>
+          ))}
         </div>
       </motion.section>
     );
   }
 
-  // 4. شريحة الفهرس (Index)
   if (slide.type === 'index') {
     return (
       <motion.section
@@ -330,7 +330,7 @@ export default function SlideSection({ slide, isActive }) {
         </div>
 
         <div className="space-y-3.5 max-h-[420px] overflow-y-auto pr-2 pb-8 scrollbar-thin scrollbar-thumb-pink-500/40 scrollbar-track-purple-950/40">
-          {slide.indexChapters.map((chap, idx) => (
+          {(slide.indexChapters || []).map((chap, idx) => (
             <div
               key={idx}
               onClick={() => {
@@ -352,16 +352,6 @@ export default function SlideSection({ slide, isActive }) {
                   {chap.page}
                 </span>
               </div>
-
-              {chap.subItems && chap.subItems.length > 0 && (
-                <div className="pr-11 pt-2 space-y-2 border-t border-pink-500/15 mt-1">
-                  {chap.subItems.map((sub, sIdx) => (
-                    <div key={sIdx} className="text-sm sm:text-base text-white font-medium">
-                      • {sub}
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           ))}
         </div>
@@ -369,7 +359,6 @@ export default function SlideSection({ slide, isActive }) {
     );
   }
 
-  // 5. شريحة المحتوى العادي (Content) مع استخدام text-right لمنع تمدد المسافات
   if (slide.type === 'content') {
     const activeSection = slide.sections && slide.sections[activeTabIdx] ? slide.sections[activeTabIdx] : null;
 
@@ -395,7 +384,6 @@ export default function SlideSection({ slide, isActive }) {
           </span>
         </div>
 
-        {/* النص التمهيدي للشريحة يأتي أولاً قبل أزرار المحاور */}
         {slide.introText && (
           <div className="bg-[#240c35]/90 border border-pink-500/25 rounded-2xl p-4 text-center shadow-sm">
             <p className="text-base sm:text-xl font-bold font-quran text-pink-200">
@@ -404,16 +392,8 @@ export default function SlideSection({ slide, isActive }) {
           </div>
         )}
 
-        {/* أزرار التبديل متجاورة مع اسكرول أفقي ومؤشرات بصرية واضحة لوجود اسكرول جانبي */}
         {slide.sections && slide.sections.length > 0 && (
           <div className="relative">
-            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#1a0827] to-transparent pointer-events-none z-10 flex items-center justify-start text-pink-400 opacity-90">
-              <span className="text-xs font-bold animate-pulse">◀</span>
-            </div>
-            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-[#1a0827] to-transparent pointer-events-none z-10 flex items-center justify-end text-pink-400 opacity-90">
-              <span className="text-xs font-bold animate-pulse">▶</span>
-            </div>
-
             <div className="flex items-center gap-2 overflow-x-auto pb-2 pt-1 px-4 scrollbar-thin scrollbar-thumb-pink-500/40 scrollbar-track-purple-950/40 whitespace-nowrap">
               {slide.sections.map((sec, sIdx) => (
                 <button
@@ -444,7 +424,6 @@ export default function SlideSection({ slide, isActive }) {
                   {activeSection.title}
                 </h3>
 
-                {/* مقدمة المحطات إذا وجدت */}
                 {activeSection.introTexts && activeSection.introTexts.length > 0 && (
                   <div className="space-y-3 pb-3 border-b border-pink-500/15">
                     {activeSection.introTexts.map((intro, iIdx) => (
@@ -455,132 +434,50 @@ export default function SlideSection({ slide, isActive }) {
                   </div>
                 )}
 
-                {/* إذا كانت المحطات موجودة (سبع محطات) بدون بوردر إضافي */}
                 {activeSection.stations && activeSection.stations.length > 0 ? (
                   <div className="space-y-4">
-                    {/* أزرار المحطات السبع متجاورة مع اسكرول أفقي ومؤشرات بصرية */}
-                    <div className="relative">
-                      <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#240c35] to-transparent pointer-events-none z-10 flex items-center justify-start text-pink-400">
-                        <span className="text-xs font-bold">◀</span>
-                      </div>
-                      <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-[#240c35] to-transparent pointer-events-none z-10 flex items-center justify-end text-pink-400">
-                        <span className="text-xs font-bold">▶</span>
-                      </div>
-
-                      <div className="flex items-center gap-2 overflow-x-auto pb-2 px-3 scrollbar-thin scrollbar-thumb-pink-500/40 whitespace-nowrap">
-                        {activeSection.stations.map((st, stIdx) => (
-                          <button
-                            key={stIdx}
-                            onClick={() => {
-                              setActiveStationIdx(stIdx);
-                              setActiveSubStationIdx(0);
-                            }}
-                            className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm shrink-0 whitespace-nowrap ${
-                              activeStationIdx === stIdx
-                                ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white border border-pink-400/50 shadow-md'
-                                : 'bg-[#1a0827]/90 text-pink-200 border border-pink-500/25 hover:border-pink-500/50'
-                            }`}
-                          >
-                            {st.buttonTitle || `المحطة ${stIdx + 1}`}
-                          </button>
-                        ))}
-                      </div>
+                    <div className="flex items-center gap-2 overflow-x-auto pb-2 px-3 scrollbar-thin scrollbar-thumb-pink-500/40 whitespace-nowrap">
+                      {activeSection.stations.map((st, stIdx) => (
+                        <button
+                          key={stIdx}
+                          onClick={() => {
+                            setActiveStationIdx(stIdx);
+                            setActiveSubStationIdx(0);
+                          }}
+                          className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm shrink-0 whitespace-nowrap ${
+                            activeStationIdx === stIdx
+                              ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white border border-pink-400/50 shadow-md'
+                              : 'bg-[#1a0827]/90 text-pink-200 border border-pink-500/25 hover:border-pink-500/50'
+                          }`}
+                        >
+                          {st.buttonTitle || `المحطة ${stIdx + 1}`}
+                        </button>
+                      ))}
                     </div>
 
-                    {/* صندوق عرض المحطة النشطة بدون بوردر إضافي مع اسكرول رأسي شرطي */}
                     {activeSection.stations[activeStationIdx] && (
                       <div className="space-y-3">
                         <h4 className="text-sm sm:text-lg font-bold text-pink-300 pb-2 border-b border-pink-500/20">
                           {activeSection.stations[activeStationIdx].stationTitle}
                         </h4>
 
-                        {activeSection.stations[activeStationIdx].subStations &&
-                        activeSection.stations[activeStationIdx].subStations.length > 0 ? (
-                          <div className="space-y-4">
-                            <div className="relative">
-                              <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#240c35] to-transparent pointer-events-none z-10 flex items-center justify-start text-pink-400">
-                                <span className="text-xs font-bold">◀</span>
-                              </div>
-                              <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-[#240c35] to-transparent pointer-events-none z-10 flex items-center justify-end text-pink-400">
-                                <span className="text-xs font-bold">▶</span>
-                              </div>
-
-                              <div className="flex items-center gap-2 overflow-x-auto pb-2 px-3 scrollbar-thin scrollbar-thumb-pink-500/40 whitespace-nowrap">
-                                {activeSection.stations[activeStationIdx].subStations.map((subSt, subIdx) => (
-                                  <button
-                                    key={subIdx}
-                                    onClick={() => setActiveSubStationIdx(subIdx)}
-                                    className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm shrink-0 whitespace-nowrap ${
-                                      activeSubStationIdx === subIdx
-                                        ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white border border-pink-400/50 shadow-md'
-                                        : 'bg-[#12051d]/90 text-pink-200 border border-pink-500/25 hover:border-pink-500/50'
-                                    }`}
-                                  >
-                                    {subSt.buttonTitle}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-
-                            {activeSection.stations[activeStationIdx].subStations[activeSubStationIdx] && (
-                              <div className="space-y-3">
-                                {activeSection.stations[activeStationIdx].subStations[activeSubStationIdx].subStationTitle && (
-                                  <h5 className="text-sm sm:text-base font-bold text-pink-300 pb-2 border-b border-pink-500/20">
-                                    {formatIslamicText(activeSection.stations[activeStationIdx].subStations[activeSubStationIdx].subStationTitle)}
-                                  </h5>
-                                )}
-                                <div
-                                  className={
-                                    (activeSection.stations[activeStationIdx].subStations[activeSubStationIdx].texts || []).join('').length > 350
-                                      ? "max-h-[300px] lg:max-h-[320px] overflow-y-auto pr-2 pb-10 scrollbar-thin scrollbar-thumb-pink-500/40 scrollbar-track-purple-950/40 space-y-3"
-                                      : "space-y-3"
-                                  }
-                                >
-                                  {(activeSection.stations[activeStationIdx].subStations[activeSubStationIdx].texts || []).map((txt, tIdx) => (
-                                    <p key={tIdx} dir="rtl" className="text-sm sm:text-base leading-relaxed text-gray-100 font-medium text-right">
-                                      {formatIslamicText(txt)}
-                                    </p>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        ) : (
-                          <div className={(activeSection.stations[activeStationIdx].texts || []).join('').length > 350 ? "max-h-[300px] lg:max-h-[320px] overflow-y-auto pr-2 pb-10 scrollbar-thin scrollbar-thumb-pink-500/40 scrollbar-track-purple-950/40 space-y-3" : "space-y-3"}>
-                            {(activeSection.stations[activeStationIdx].texts || []).map((txt, tIdx) => (
-                              <p key={tIdx} dir="rtl" className="text-sm sm:text-base leading-relaxed text-gray-100 font-medium text-right">
-                                {formatIslamicText(txt)}
-                              </p>
-                            ))}
-                          </div>
-                        )}
+                        <div className="space-y-3">
+                          {(activeSection.stations[activeStationIdx].texts || []).map((txt, tIdx) => (
+                            <p key={tIdx} dir="rtl" className="text-sm sm:text-base leading-relaxed text-gray-100 font-medium text-right">
+                              {formatIslamicText(txt)}
+                            </p>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
                 ) : (
-                  /* العرض العادي للنصوص مع تفعيل الاسكرول فقط إذا كان الكلام طويلاً يحتاج ذلك */
-                  <div className={(activeSection.texts || []).join('').length > 350 ? "max-h-[350px] lg:max-h-[370px] overflow-y-auto pr-3 pb-12 scrollbar-thin scrollbar-thumb-pink-500/40 scrollbar-track-purple-950/40 space-y-4" : "space-y-4"}>
-                    {(activeSection.texts || []).map((txt, tIdx) => {
-                      const isQuestionHeader = /^\d+\)\s*/.test(txt);
-                      const isSubHeader = /^\d+\.\s*(خاتمة|إسقاط)/.test(txt);
-                      const isHeading = isQuestionHeader || isSubHeader;
-                      const isLongHeading = isHeading && txt.length > 70;
-                      return (
-                        <p
-                          key={tIdx}
-                          dir="rtl"
-                          className={
-                            isHeading
-                              ? isLongHeading
-                                ? "text-sm sm:text-base lg:text-lg leading-loose text-white font-bold text-right pt-4 pb-2 border-b border-pink-500/20"
-                                : "text-base sm:text-lg leading-loose text-pink-300 font-bold text-right pt-4 pb-2 border-b border-pink-500/20"
-                              : "text-sm sm:text-base lg:text-lg leading-loose text-gray-100 font-medium text-right"
-                          }
-                        >
-                          {formatIslamicText(txt)}
-                        </p>
-                      );
-                    })}
+                  <div className="space-y-4">
+                    {(activeSection.texts || []).map((txt, tIdx) => (
+                      <p key={tIdx} dir="rtl" className="text-sm sm:text-base lg:text-lg leading-loose text-gray-100 font-medium text-right">
+                        {formatIslamicText(txt)}
+                      </p>
+                    ))}
                   </div>
                 )}
               </div>
@@ -608,7 +505,6 @@ export default function SlideSection({ slide, isActive }) {
     return <MindMapSlide slide={slide} isActive={isActive} />;
   }
 
-  // 6. شريحة المصادر والمراجع المعتمدة (References)
   if (slide.type === 'references') {
     return (
       <motion.section
@@ -636,14 +532,6 @@ export default function SlideSection({ slide, isActive }) {
             {slide.slideNumber}
           </span>
         </div>
-
-        {slide.introText && (
-          <div className="bg-[#240c35]/90 border border-pink-500/25 rounded-2xl p-4 text-center shadow-sm">
-            <p className="text-base sm:text-xl font-bold font-quran text-pink-200">
-              {formatIslamicText(slide.introText)}
-            </p>
-          </div>
-        )}
 
         <div className="w-full">
           <div className="bg-[#240c35]/90 border border-pink-500/25 rounded-2xl p-4 sm:p-6 shadow-sm">
