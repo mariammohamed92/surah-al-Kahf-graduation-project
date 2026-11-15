@@ -346,6 +346,16 @@ export default function SlideSection({ slide, isActive }) {
                   {chap.page}
                 </span>
               </div>
+
+              {chap.subItems && chap.subItems.length > 0 && (
+                <div className="pr-11 pt-2 space-y-2 border-t border-pink-500/15 mt-1">
+                  {chap.subItems.map((sub, sIdx) => (
+                    <div key={sIdx} className="text-sm sm:text-base text-white font-medium">
+                      • {sub}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -388,6 +398,13 @@ export default function SlideSection({ slide, isActive }) {
 
         {slide.sections && slide.sections.length > 0 && (
           <div className="relative">
+            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#1a0827] to-transparent pointer-events-none z-10 flex items-center justify-start text-pink-400 opacity-90">
+              <span className="text-xs font-bold animate-pulse">◀</span>
+            </div>
+            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-[#1a0827] to-transparent pointer-events-none z-10 flex items-center justify-end text-pink-400 opacity-90">
+              <span className="text-xs font-bold animate-pulse">▶</span>
+            </div>
+
             <div className="flex items-center gap-2 overflow-x-auto pb-2 pt-1 px-4 scrollbar-thin scrollbar-thumb-pink-500/40 scrollbar-track-purple-950/40 whitespace-nowrap">
               {slide.sections.map((sec, sIdx) => (
                 <button
@@ -430,23 +447,32 @@ export default function SlideSection({ slide, isActive }) {
 
                 {activeSection.stations && activeSection.stations.length > 0 ? (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-2 overflow-x-auto pb-2 px-3 scrollbar-thin scrollbar-thumb-pink-500/40 whitespace-nowrap">
-                      {activeSection.stations.map((st, stIdx) => (
-                        <button
-                          key={stIdx}
-                          onClick={() => {
-                            setActiveStationIdx(stIdx);
-                            setActiveSubStationIdx(0);
-                          }}
-                          className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm shrink-0 whitespace-nowrap ${
-                            activeStationIdx === stIdx
-                              ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white border border-pink-400/50 shadow-md'
-                              : 'bg-[#1a0827]/90 text-pink-200 border border-pink-500/25 hover:border-pink-500/50'
-                          }`}
-                        >
-                          {st.buttonTitle || `المحطة ${stIdx + 1}`}
-                        </button>
-                      ))}
+                    <div className="relative">
+                      <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#240c35] to-transparent pointer-events-none z-10 flex items-center justify-start text-pink-400">
+                        <span className="text-xs font-bold">◀</span>
+                      </div>
+                      <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-[#240c35] to-transparent pointer-events-none z-10 flex items-center justify-end text-pink-400">
+                        <span className="text-xs font-bold">▶</span>
+                      </div>
+
+                      <div className="flex items-center gap-2 overflow-x-auto pb-2 px-3 scrollbar-thin scrollbar-thumb-pink-500/40 whitespace-nowrap">
+                        {activeSection.stations.map((st, stIdx) => (
+                          <button
+                            key={stIdx}
+                            onClick={() => {
+                              setActiveStationIdx(stIdx);
+                              setActiveSubStationIdx(0);
+                            }}
+                            className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm shrink-0 whitespace-nowrap ${
+                              activeStationIdx === stIdx
+                                ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white border border-pink-400/50 shadow-md'
+                                : 'bg-[#1a0827]/90 text-pink-200 border border-pink-500/25 hover:border-pink-500/50'
+                            }`}
+                          >
+                            {st.buttonTitle || `المحطة ${stIdx + 1}`}
+                          </button>
+                        ))}
+                      </div>
                     </div>
 
                     {activeSection.stations[activeStationIdx] && (
@@ -455,23 +481,104 @@ export default function SlideSection({ slide, isActive }) {
                           {activeSection.stations[activeStationIdx].stationTitle}
                         </h4>
 
-                        <div className="space-y-3">
-                          {(activeSection.stations[activeStationIdx].texts || []).map((txt, tIdx) => (
-                            <p key={tIdx} dir="rtl" className="text-sm sm:text-base leading-relaxed text-gray-100 font-medium text-right">
-                              {formatIslamicText(txt)}
-                            </p>
-                          ))}
-                        </div>
+                        {activeSection.stations[activeStationIdx].subStations &&
+                        activeSection.stations[activeStationIdx].subStations.length > 0 ? (
+                          <div className="space-y-4">
+                            <div className="relative">
+                              <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#240c35] to-transparent pointer-events-none z-10 flex items-center justify-start text-pink-400">
+                                <span className="text-xs font-bold">◀</span>
+                              </div>
+                              <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-[#240c35] to-transparent pointer-events-none z-10 flex items-center justify-end text-pink-400">
+                                <span className="text-xs font-bold">▶</span>
+                              </div>
+
+                              <div className="flex items-center gap-2 overflow-x-auto pb-2 px-3 scrollbar-thin scrollbar-thumb-pink-500/40 whitespace-nowrap">
+                                {activeSection.stations[activeStationIdx].subStations.map((subSt, subIdx) => (
+                                  <button
+                                    key={subIdx}
+                                    onClick={() => setActiveSubStationIdx(subIdx)}
+                                    className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm shrink-0 whitespace-nowrap ${
+                                      activeSubStationIdx === subIdx
+                                        ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white border border-pink-400/50 shadow-md'
+                                        : 'bg-[#12051d]/90 text-pink-200 border border-pink-500/25 hover:border-pink-500/50'
+                                    }`}
+                                  >
+                                    {subSt.buttonTitle}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+
+                            {activeSection.stations[activeStationIdx].subStations[activeSubStationIdx] && (
+                              <div className="space-y-3">
+                                {activeSection.stations[activeStationIdx].subStations[activeSubStationIdx].subStationTitle && (
+                                  <h5 className="text-sm sm:text-base font-bold text-pink-300 pb-2 border-b border-pink-500/20">
+                                    {formatIslamicText(activeSection.stations[activeStationIdx].subStations[activeSubStationIdx].subStationTitle)}
+                                  </h5>
+                                )}
+                                <div
+                                  className={
+                                    (activeSection.stations[activeStationIdx].subStations[activeSubStationIdx].texts || []).join('').length > 350
+                                      ? "max-h-[300px] lg:max-h-[320px] overflow-y-auto pr-2 pb-10 scrollbar-thin scrollbar-thumb-pink-500/40 scrollbar-track-purple-950/40 space-y-3"
+                                      : "space-y-3"
+                                  }
+                                >
+                                  {(activeSection.stations[activeStationIdx].subStations[activeSubStationIdx].texts || []).map((txt, tIdx) => (
+                                    <p key={tIdx} dir="rtl" className="text-sm sm:text-base leading-relaxed text-gray-100 font-medium text-right">
+                                      {formatIslamicText(txt)}
+                                    </p>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div
+                            className={
+                              (activeSection.stations[activeStationIdx].texts || []).join('').length > 350
+                                ? "max-h-[300px] lg:max-h-[320px] overflow-y-auto pr-2 pb-10 scrollbar-thin scrollbar-thumb-pink-500/40 scrollbar-track-purple-950/40 space-y-3"
+                                : "space-y-3"
+                            }
+                          >
+                            {(activeSection.stations[activeStationIdx].texts || []).map((txt, tIdx) => (
+                              <p key={tIdx} dir="rtl" className="text-sm sm:text-base leading-relaxed text-gray-100 font-medium text-right">
+                                {formatIslamicText(txt)}
+                              </p>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    {(activeSection.texts || []).map((txt, tIdx) => (
-                      <p key={tIdx} dir="rtl" className="text-sm sm:text-base lg:text-lg leading-loose text-gray-100 font-medium text-right">
-                        {formatIslamicText(txt)}
-                      </p>
-                    ))}
+                  <div
+                    className={
+                      (activeSection.texts || []).join('').length > 350
+                        ? "max-h-[350px] lg:max-h-[370px] overflow-y-auto pr-3 pb-12 scrollbar-thin scrollbar-thumb-pink-500/40 scrollbar-track-purple-950/40 space-y-4"
+                        : "space-y-4"
+                    }
+                  >
+                    {(activeSection.texts || []).map((txt, tIdx) => {
+                      const isQuestionHeader = /^\d+\)\s*/.test(txt);
+                      const isSubHeader = /^\d+\.\s*(خاتمة|إسقاط)/.test(txt);
+                      const isHeading = isQuestionHeader || isSubHeader;
+                      const isLongHeading = isHeading && txt.length > 70;
+                      return (
+                        <p
+                          key={tIdx}
+                          dir="rtl"
+                          className={
+                            isHeading
+                              ? isLongHeading
+                                ? "text-sm sm:text-base lg:text-lg leading-loose text-white font-bold text-right pt-4 pb-2 border-b border-pink-500/20"
+                                : "text-base sm:text-lg leading-loose text-pink-300 font-bold text-right pt-4 pb-2 border-b border-pink-500/20"
+                              : "text-sm sm:text-base lg:text-lg leading-loose text-gray-100 font-medium text-right"
+                          }
+                        >
+                          {formatIslamicText(txt)}
+                        </p>
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -526,6 +633,14 @@ export default function SlideSection({ slide, isActive }) {
             {slide.slideNumber}
           </span>
         </div>
+
+        {slide.introText && (
+          <div className="bg-[#240c35]/90 border border-pink-500/25 rounded-2xl p-4 text-center shadow-sm">
+            <p className="text-base sm:text-xl font-bold font-quran text-pink-200">
+              {formatIslamicText(slide.introText)}
+            </p>
+          </div>
+        )}
 
         <div className="w-full">
           <div className="bg-[#240c35]/90 border border-pink-500/25 rounded-2xl p-4 sm:p-6 shadow-sm">
