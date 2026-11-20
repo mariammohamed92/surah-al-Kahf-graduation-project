@@ -8,6 +8,7 @@
   }
 
   html, body {
+    font-size: 18px;
     scrollbar-width: thin;
     scrollbar-color: #d946ef #180724;
   }
